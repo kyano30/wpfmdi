@@ -311,7 +311,7 @@ namespace WPF.MDI
 				if (mdiChild.WindowState == WindowState.Maximized)
 				{
 					mdiChild.Width = ActualWidth;
-					mdiChild.Height = ActualHeight;
+					mdiChild.Height = InnerHeight - 2;  // ContentBorder.BorderThickness="1" in template
 				}
 				if (mdiChild.WindowState == WindowState.Minimized)
 				{

@@ -337,10 +337,22 @@ namespace WPF.MDI
 					{
 						MdiChild mdiChild = Children[e.NewStartingIndex],
 							topChild = ActiveMdiChild;
+						bool createMaximize = false;
 
-						if (topChild != null && topChild.WindowState == WindowState.Maximized)
-							mdiChild.Loaded += (s, a) => mdiChild.WindowState = WindowState.Maximized;
-						mdiChild.Loaded += (s, a) => ActiveMdiChild = mdiChild;
+						if (mdiChild.WindowState == WindowState.Maximized)
+						{
+							mdiChild.WindowState = WindowState.Normal;
+							createMaximize = true;
+						}
+
+						if ((topChild != null && topChild.WindowState == WindowState.Maximized) || createMaximize)
+							mdiChild.Loaded += (s, a) => 
+							{
+								ActiveMdiChild = mdiChild;                      //  Required before setting WindowState
+								mdiChild.WindowState = WindowState.Maximized;
+							};
+						else
+							mdiChild.Loaded += (s, a) => ActiveMdiChild = mdiChild;
 
 						if (mdiChild.Position.X < 0 || mdiChild.Position.Y < 0)
 							mdiChild.Position = new Point(_windowOffset, _windowOffset);
@@ -366,6 +378,7 @@ namespace WPF.MDI
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					_windowCanvas.Children.Clear();
+					ActiveMdiChild = null;
 					break;
 			}
 			InvalidateSize();

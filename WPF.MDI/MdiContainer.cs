@@ -311,7 +311,7 @@ namespace WPF.MDI
 				if (mdiChild.WindowState == WindowState.Maximized)
 				{
 					mdiChild.Width = ActualWidth;
-					mdiChild.Height = InnerHeight - 2;  // ContentBorder.BorderThickness="1" in template
+					mdiChild.Height = InnerHeight;
 				}
 				if (mdiChild.WindowState == WindowState.Minimized)
 				{
@@ -650,25 +650,28 @@ namespace WPF.MDI
 			MdiChild newChild = (MdiChild)e.NewValue,
 				oldChild = (MdiChild)e.OldValue;
 
-			if (newChild == null || newChild == oldChild)
+			if (newChild == oldChild)
 				return;
 
-			if (oldChild != null &&  oldChild.WindowState == WindowState.Maximized)
-				newChild.WindowState = WindowState.Maximized;
-
-			int maxZindex = 0;
-			for (int i = 0; i < mdiContainer.Children.Count; i++)
+			if (newChild != null)
 			{
-				int zindex = Panel.GetZIndex(mdiContainer.Children[i]);
-				if (zindex > maxZindex)
-					maxZindex = zindex;
-				if (mdiContainer.Children[i] != newChild)
-					mdiContainer.Children[i].Focused = false;
-				else
-					newChild.Focused = true;
-			}
+				if (oldChild != null &&  oldChild.WindowState == WindowState.Maximized)
+					newChild.WindowState = WindowState.Maximized;
 
-			Panel.SetZIndex(newChild, maxZindex + 1);
+				int maxZindex = 0;
+				for (int i = 0; i < mdiContainer.Children.Count; i++)
+				{
+					int zindex = Panel.GetZIndex(mdiContainer.Children[i]);
+					if (zindex > maxZindex)
+						maxZindex = zindex;
+					if (mdiContainer.Children[i] != newChild)
+						mdiContainer.Children[i].Focused = false;
+					else
+						newChild.Focused = true;
+				}
+
+				Panel.SetZIndex(newChild, maxZindex + 1);
+			}
 
 			if (mdiContainer.MdiChildTitleChanged != null)
 				mdiContainer.MdiChildTitleChanged(mdiContainer, new RoutedEventArgs());

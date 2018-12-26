@@ -11,7 +11,7 @@ using System.Windows;
 [assembly: AssemblyDescription("http://wpfmdi.codeplex.com/")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("xadet")]
-[assembly: AssemblyProduct("WPF.MDI")]
+[assembly: AssemblyProduct("WPF.MDI changed by kyano30")]
 [assembly: AssemblyCopyright("2009 xadet, 2010 stbear")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -330,6 +330,11 @@ namespace WPF.MDI
 		private Point minimizedPosition = new Point(-1, -1);
 
 		/// <summary>
+		/// Original minmum size of window in Minimized state.
+		/// </summary>
+		private Size originalMinimumSize = new Size();
+
+		/// <summary>
 		/// Previous non-maximized state of maximized window.
 		/// </summary>
 		WindowState NonMaximizedState { get; set; }
@@ -921,7 +926,11 @@ namespace WPF.MDI
 			}
 
 			if (previousWindowState == WindowState.Minimized)
+			{
 				mdiChild.minimizedPosition = mdiChild.Position;
+				mdiChild.MinWidth = mdiChild.originalMinimumSize.Width;
+				mdiChild.MinHeight = mdiChild.originalMinimumSize.Height;
+			}
 
 			switch (windowState)
 			{
@@ -936,6 +945,10 @@ namespace WPF.MDI
 					{
 						if (previousWindowState == WindowState.Normal)
 							mdiChild.originalDimension = new Rect(mdiChild.Position.X, mdiChild.Position.Y, mdiChild.ActualWidth, mdiChild.ActualHeight);
+
+						mdiChild.originalMinimumSize = new Size(mdiChild.MinWidth, mdiChild.MinHeight);
+						mdiChild.MinWidth = 0;
+						mdiChild.MinHeight = 0;
 
 						double newLeft, newTop;
 						if (mdiChild.minimizedPosition.X >= 0 || mdiChild.minimizedPosition.Y >= 0)
@@ -1012,7 +1025,7 @@ namespace WPF.MDI
 
 						mdiChild.Position = new Point(0, 0);
 						mdiChild.Width = mdiContainer.ActualWidth;
-						mdiChild.Height = mdiContainer.InnerHeight - 2; // ContentBorder.BorderThickness="1" in template
+						mdiChild.Height = mdiContainer.InnerHeight;
 
 						ScrollViewer sv = (ScrollViewer)((Grid)mdiContainer.Content).Children[1];
 						sv.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;

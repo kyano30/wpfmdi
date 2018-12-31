@@ -53,7 +53,7 @@ namespace WPF.MDI
 		/// <returns>The identifier for the WPF.MDI.MdiContainer.MdiLayout property.</returns>
 		public static readonly DependencyProperty MdiLayoutProperty =
 			DependencyProperty.Register("MdiLayout", typeof(MdiLayout), typeof(MdiContainer),
-			new UIPropertyMetadata(MdiLayout.ArrangeIcons, new PropertyChangedCallback(MdiLayoutValueChanged)));
+			new UIPropertyMetadata(MdiLayout.ArrangeIcons, null, new CoerceValueCallback(MdiLayoutCoerceValue)));
 
 		/// <summary>
 		/// Identifies the WPF.MDI.MdiContainer.ActiveMdiChild dependency property.
@@ -482,18 +482,19 @@ namespace WPF.MDI
 		}
 
 		/// <summary>
-		/// Dependency property event once the MDI layout value has changed.
+		/// Dependency property event the MDI layout value coerce.
 		/// </summary>
 		/// <param name="sender">The sender.</param>
-		/// <param name="e">The <see cref="System.Windows.DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
-		private static void MdiLayoutValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		/// <param name="baseValue">The coerce value</param>
+		/// <returns>The changing value</returns>
+		private static object MdiLayoutCoerceValue(DependencyObject sender, object baseValue)
 		{
 			MdiContainer mdiContainer = (MdiContainer)sender;
-			MdiLayout value = (MdiLayout)e.NewValue;
+			MdiLayout value = (MdiLayout)baseValue;
 
 			if (value == MdiLayout.ArrangeIcons ||
 				mdiContainer.Children.Count < 1)
-				return;
+				return value;
 
 			// 1. WindowState.Maximized -> WindowState.Normal
 			List<MdiChild> minimizedWindows = new List<MdiChild>(),
@@ -635,8 +636,15 @@ namespace WPF.MDI
 					}
 					break;
 			}
+			//	for ScrollBarVisibility Changing
+			var c = mdiContainer._windowCanvas;
+			var sv = (ScrollViewer)c.Parent;
+			c.Width = 0;
+			c.Height = 0;
+			sv.UpdateLayout();
 			mdiContainer.InvalidateSize();
-			mdiContainer.MdiLayout = MdiLayout.ArrangeIcons;
+
+			return value;
 		}
 
 		/// <summary>

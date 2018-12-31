@@ -530,6 +530,8 @@ namespace WPF.MDI
 				mdiChild.Position = new Point(newLeft, containerHeight);
 			}
 
+			if (normalWindows.Count == 0) return value;		//	for DivideByZero (cols or rows = 0
+
 			// 3. Resize & arrange normal windows
 			switch (value)
 			{
@@ -636,13 +638,8 @@ namespace WPF.MDI
 					}
 					break;
 			}
-			//	for ScrollBarVisibility Changing
-			var c = mdiContainer._windowCanvas;
-			var sv = (ScrollViewer)c.Parent;
-			c.Width = 0;
-			c.Height = 0;
-			sv.UpdateLayout();
-			mdiContainer.InvalidateSize();
+
+			mdiContainer.UpdateScrollInfo();		//	for ScrollBarVisibility Changing
 
 			return value;
 		}
@@ -723,5 +720,19 @@ namespace WPF.MDI
 		/// Occurs when a multiple-document interface (MDI) child form is activated or closed within an MDI application.
 		/// </summary>
 		public event RoutedEventHandler MdiChildTitleChanged;
+
+		/// <summary>
+		/// update ScrollInfo
+		/// </summary>
+		public void UpdateScrollInfo()
+		{
+			var c = _windowCanvas;
+			var sv = (ScrollViewer)c.Parent;
+
+			c.Width = 0;
+			c.Height = 0;
+			sv.UpdateLayout();
+			InvalidateSize();
+		}
 	}
 }

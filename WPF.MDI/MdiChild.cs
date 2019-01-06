@@ -903,7 +903,7 @@ namespace WPF.MDI
 
 			if (previousWindowState == WindowState.Maximized)
 			{
-				if (mdiContainer.ActiveMdiChild.WindowState != WindowState.Maximized)
+				if (mdiContainer.ActiveMdiChild != null && mdiContainer.ActiveMdiChild.WindowState != WindowState.Maximized)
 				{
 					for (int i = 0; i < mdiContainer.Children.Count; i++)
 					{
